@@ -29,6 +29,10 @@
         "@schematics/angular:pipe": {
           "skipTests": true,
           "path": "src/co/pipe"
+        },
+        "@schematics/angular:directive": {
+          "skipTests": true,
+          "path": "src/shared/directives"
         }
       },
       "root": "",
