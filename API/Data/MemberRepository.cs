@@ -61,4 +61,9 @@ public class MemberRepository(AppDbContext context) : IMemberRepository
       .Include(x => x.Photos)
       .SingleOrDefaultAsync(x => x.Id == id);
   }
+
+  public Task GetMessageGroup(string groupName)
+  {
+    throw new NotImplementedException();
+  }
 }
