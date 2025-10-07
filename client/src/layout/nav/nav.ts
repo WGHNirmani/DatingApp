@@ -2,9 +2,8 @@ import { Component, OnInit, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { inject } from '@angular/core';
 
-
 import { AccountService } from '../../core/services/account-service';
-import { RouterLink, RouterLinkActive, Router} from '@angular/router';
+import { RouterLink, RouterLinkActive, Router } from '@angular/router';
 import { ToastService } from '../../core/services/toast-service';
 import { themes } from '../theme';
 import { BusyService } from '../../core/services/busy-service';
@@ -14,17 +13,19 @@ import { HasRole } from '../../shared/directives/has-role';
   selector: 'app-nav',
   imports: [FormsModule, RouterLink, RouterLinkActive, HasRole],
   templateUrl: './nav.html',
-  styleUrl: './nav.css'
+  styleUrl: './nav.css',
 })
 export class Nav implements OnInit {
-  
   protected accountService = inject(AccountService);
   protected busyService = inject(BusyService);
   private router = inject(Router);
   private toast = inject(ToastService);
-  protected creds: any = {}
-  protected selectedTheme = signal<string>(localStorage.getItem('theme') || 'light');
+  protected creds: any = {};
+  protected selectedTheme = signal<string>(
+    localStorage.getItem('theme') || 'light'
+  );
   protected themes = themes;
+  protected loading = signal(false);
 
   ngOnInit(): void {
     document.documentElement.setAttribute('data-theme', this.selectedTheme());
@@ -38,19 +39,26 @@ export class Nav implements OnInit {
     if (elem) elem.blur();
   }
 
-  login(){
+  handleSelectUserItem() {
+    const elem = document.activeElement as HTMLDivElement;
+    if (elem) elem.blur();
+  }
+
+  login() {
+    this.loading.set(true);
     this.accountService.login(this.creds).subscribe({
       next: () => {
         this.router.navigateByUrl('/members');
         this.toast.succcess('Logged in successfully');
         this.creds = {};
       },
-      error: error => {
+      error: (error) => {
         this.toast.error(error.error);
-      }
-    })
+      },
+      complete: () => this.loading.set(false),
+    });
   }
-  logout(){
+  logout() {
     this.accountService.logout();
     this.router.navigateByUrl('/');
   }
